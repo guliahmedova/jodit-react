@@ -1,6 +1,6 @@
 import Editor from "./Editor";
 import sidebarTexts from "../datas/sidebarTexts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from 'react-modal';
 import options from "../datas/selectBoxDatas";
 import values from '../datas/values';
@@ -20,43 +20,53 @@ const customStyles = {
 };
 
 const Home = () => {
+  let subtitle;
   const [text, setText] = useState([]);
+  const [content, setContent] = useState('');
+  const [editorValue, setEditorValue] = useState('');
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(JSON.stringify(options[0]))
+  const [modalTitle, setModalTitle] = useState('');
 
   const getTextValue = (value) => {
     setText(prevState => [...prevState, value]);
   };
 
-  let subtitle;
-  const [modalIsOpen, setIsOpen] = useState(false);
+  function getModalTitle(value) {
+    setModalTitle(value);
+  };
 
-  function openModal() {
+  function openModal(value) {
+    getModalTitle(value);
     setIsOpen(true);
-  }
+  };
 
   function afterOpenModal() {
     subtitle.style.color = 'black';
-  }
+  };
 
   function closeModal() {
     setIsOpen(false);
-  }
+  };
 
   const sidebarTextsEl = sidebarTexts.map((item) => {
     return <div key={item.id} className="text-box">{item.text} <span onClick={() => getTextValue(item.text)} className="icon">+</span></div>
   });
 
   const optionsValue = options.map((item, index) => {
-    return <option value={item.name} key={index}>{item.name} {item.lastName} {item.fatherName}</option>
+    return <option value={JSON.stringify(item)} key={index}>{item.name} {item.lastName} {item.fatherName}</option>
   });
-
-  function getClickValueText(value) {
-    console.log(value);
-  };
 
   const valuesEl = values.map((item, index) => {
-    return <div key={index} onClick={() => getClickValueText(item.name)} className="value-box">{item.name} <span>+</span></div>
+    return <div name={item.name} key={index} onClick={() => setContent((prevState) => prevState + " " + JSON.parse(selectedOption)[item.key])} className="value-box">{item.name} <span>+</span></div>
   });
 
+  const handleAddButtonClick = () => {
+    setEditorValue(content);
+    setIsOpen(false);
+    console.log("editorValue: ", editorValue);
+  };
+  
   return (
     <div className="home">
       <div className="sidebar">
@@ -67,7 +77,7 @@ const Home = () => {
         <div className="content-box">
           {text.map((item, index) =>
             <div key={index + 2}>
-              <div className="show-text" key={index}>{item} <span onClick={openModal} className="icon">+</span></div>
+              <div className="show-text" key={index}>{item} <span onClick={() => openModal(item)} className="icon">OM</span></div>
               <Modal
                 key={index + 1}
                 isOpen={modalIsOpen}
@@ -78,12 +88,12 @@ const Home = () => {
                 contentLabel="Example Modal"
               >
                 <div className="modal-title">
-                  <h4 ref={(_subtitle) => (subtitle = _subtitle)}>{item}</h4>
+                  <h4 ref={(_subtitle) => (subtitle = _subtitle)}>{modalTitle}</h4>
                   <button onClick={closeModal}>X</button>
                 </div>
 
                 <div>
-                  <select name="users" id="users" className="select-box">
+                  <select name="users" id="users" className="select-box" onChange={(e) => setSelectedOption(e.target.value)}>
                     {optionsValue}
                   </select>
                 </div>
@@ -95,10 +105,10 @@ const Home = () => {
 
                 <div>
                   <h2>Ümumi dəyər</h2>
-                    <JoditEditor/>
+                  <JoditEditor value={content} />
                 </div>
 
-                <button className="add-btn">Əlave et</button>
+                <button onClick={() => handleAddButtonClick()} type="button" className="add-btn">Əlave et</button>
               </Modal>
             </div>
           )
@@ -106,10 +116,10 @@ const Home = () => {
         </div>
       </div>
       <div className="content">
-        <Editor value={text[text.length - 1] ? text[text.length - 1] : ''} placeholder={'test'} />
+        <Editor value={editorValue} placeholder={'test'} />
       </div>
     </div>
   )
-}
+};
 
 export default Home;

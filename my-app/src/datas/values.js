@@ -1,19 +1,23 @@
 const values = [
     {
         id: "111",
-        name: "Ad"
+        name: "Ad",
+        key: "name"
     },
     {
         id: "222",
-        name: "Soyad"
+        name: "Soyad",
+        key: "lastName"
     },
     {
         id: "333",
-        name: "Ata Adi"
+        name: "Ata Adi",
+        key: "fatherName"
     },
     {
         id: "444",
-        name: "Rutbe"
+        name: "Rutbe",
+        key: "degree"
     }
 ]
 
