@@ -1,6 +1,6 @@
 import Editor from "./Editor";
 import sidebarTexts from "../datas/sidebarTexts";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import Modal from 'react-modal';
 import options from "../datas/selectBoxDatas";
 import values from '../datas/values';
@@ -21,12 +21,15 @@ const customStyles = {
 
 const Home = () => {
   let subtitle;
+  const editor = useRef(null);
   const [text, setText] = useState([]);
   const [content, setContent] = useState('');
   const [editorValue, setEditorValue] = useState('');
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(JSON.stringify(options[0]))
   const [modalTitle, setModalTitle] = useState('');
+
+  const config = useMemo(() => ({ readonly: false }));
 
   const getTextValue = (value) => {
     setText(prevState => [...prevState, value]);
@@ -50,7 +53,7 @@ const Home = () => {
   };
 
   const sidebarTextsEl = sidebarTexts.map((item) => {
-    return <div key={item.id} className="text-box">{item.text} <span onClick={() => getTextValue(item.text)} className="icon">+</span></div>
+    return <div key={item.id} className="text-box">{item.text} <span onClick={() => getTextValue(item.text)} className="icon">---+---</span></div>
   });
 
   const optionsValue = options.map((item, index) => {
@@ -62,11 +65,16 @@ const Home = () => {
   });
 
   const handleAddButtonClick = () => {
-    setEditorValue(content);
-    setIsOpen(false);
+    if (content.length === 0) {
+      alert('content length should be greater than 0');
+    } else if (content.length > 0) {
+      setEditorValue(content);
+      setIsOpen(false);
+      setContent('');
+    }
     console.log("editorValue: ", editorValue);
   };
-  
+
   return (
     <div className="home">
       <div className="sidebar">
@@ -79,7 +87,6 @@ const Home = () => {
             <div key={index + 2}>
               <div className="show-text" key={index}>{item} <span onClick={() => openModal(item)} className="icon">OM</span></div>
               <Modal
-                key={index + 1}
                 isOpen={modalIsOpen}
                 onAfterOpen={afterOpenModal}
                 onRequestClose={closeModal}
@@ -105,18 +112,19 @@ const Home = () => {
 
                 <div>
                   <h2>Ümumi dəyər</h2>
-                  <JoditEditor value={content} />
+                  <JoditEditor ref={editor} value={content} config={config} onBlur={newContent => {
+                    console.log("newContent: ", newContent);
+                    setContent(newContent) }} />
                 </div>
 
                 <button onClick={() => handleAddButtonClick()} type="button" className="add-btn">Əlave et</button>
               </Modal>
             </div>
-          )
-          }
+          )}
         </div>
       </div>
       <div className="content">
-        <Editor value={editorValue} placeholder={'test'} />
+        <Editor value={editorValue} placeholder={'Typing...'} />
       </div>
     </div>
   )
