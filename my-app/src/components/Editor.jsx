@@ -13,11 +13,8 @@ const Editor = ({ placeholder, value }) => {
     [placeholder]
   );
 
-  // console.log('content: ', content);
-  // console.log('value: ', value);
-
   useEffect(() => {
-    setContent(prevContent => prevContent + value);
+    setContent(value);
   }, [value]);
 
   return (
@@ -29,7 +26,7 @@ const Editor = ({ placeholder, value }) => {
         tabIndex={1}
         name='content'
         onBlur={newContent => {
-          console.log({ newContent })
+          console.log(newContent)
           setContent(newContent)
         }}
       />

@@ -28,11 +28,14 @@ const Home = () => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(JSON.stringify(options[0]))
   const [modalTitle, setModalTitle] = useState('');
+  const [defaultValue, setDefaultValue] = useState(options[0].name);
+  const [defaultConentValue, setDefaultContentValue] = useState();
 
   const config = useMemo(() => ({ readonly: false }));
 
   const getTextValue = (value) => {
     setText(prevState => [...prevState, value]);
+    setEditorValue(defaultValue);
   };
 
   function getModalTitle(value) {
@@ -42,6 +45,8 @@ const Home = () => {
   function openModal(value) {
     getModalTitle(value);
     setIsOpen(true);
+    // setDefaultContentValue(`${value}: ${values[0].name}`);
+    // setContent(defaultConentValue);
   };
 
   function afterOpenModal() {
@@ -72,8 +77,9 @@ const Home = () => {
       setIsOpen(false);
       setContent('');
     }
-    console.log("editorValue: ", editorValue);
   };
+
+  console.log(defaultConentValue)
 
   return (
     <div className="home">
@@ -113,8 +119,8 @@ const Home = () => {
                 <div>
                   <h2>Ümumi dəyər</h2>
                   <JoditEditor ref={editor} value={content} config={config} onBlur={newContent => {
-                    console.log("newContent: ", newContent);
-                    setContent(newContent) }} />
+                    setContent(newContent)
+                  }} />
                 </div>
 
                 <button onClick={() => handleAddButtonClick()} type="button" className="add-btn">Əlave et</button>
