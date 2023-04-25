@@ -21,7 +21,7 @@ const customStyles = {
 
 const Home = () => {
   let subtitle;
-  const editor = useRef(null);
+  const editorRef = useRef(null);
   const [text, setText] = useState([]);
   const [content, setContent] = useState('');
   const [editorValue, setEditorValue] = useState('');
@@ -31,7 +31,10 @@ const Home = () => {
   const [defaultValue, setDefaultValue] = useState(options[0].name);
   const [defaultConentValue, setDefaultContentValue] = useState();
 
-  const config = useMemo(() => ({ readonly: false }));
+  console.log("editorValue: ", editorValue);
+
+  const config = useMemo(() => 
+  ({ readonly: false, emptyEnter: "keep", disablePlugins: "enter" }));
 
   const getTextValue = (value) => {
     setText(prevState => [...prevState, value]);
@@ -69,17 +72,31 @@ const Home = () => {
     return <div name={item.name} key={index} onClick={() => setContent((prevState) => prevState + " " + JSON.parse(selectedOption)[item.key])} className="value-box">{item.name} <span>+</span></div>
   });
 
-  const handleAddButtonClick = () => {
+  const insertTextAtCursor = (text) => {
+    const editor = editorRef.current.editor;
+    if (!editor) {
+      return;
+    }
+    const cursorPosition = editor.s.focusOffset;
+    const cursorContent = editor.getEditorValue();
+    console.log("editor: ", editor);
+    console.log("cursorPosition: ", cursorPosition);
+    console.log("cursorContent: ", cursorContent);
+    const newContent =
+      cursorContent.slice(0, cursorPosition) + text + cursorContent.slice(cursorPosition);
+    editor.setNativeProps({ content: newContent });
+  };
+
+  const handleAddButtonClick = (event) => {
     if (content.length === 0) {
       alert('content length should be greater than 0');
     } else if (content.length > 0) {
+      insertTextAtCursor(editorValue);
       setEditorValue(content);
       setIsOpen(false);
       setContent('');
     }
   };
-
-  console.log(defaultConentValue)
 
   return (
     <div className="home">
@@ -118,7 +135,7 @@ const Home = () => {
 
                 <div>
                   <h2>Ümumi dəyər</h2>
-                  <JoditEditor ref={editor} value={content} config={config} onBlur={newContent => {
+                  <JoditEditor ref={editorRef} value={content} config={config} onBlur={newContent => {
                     setContent(newContent)
                   }} />
                 </div>
@@ -130,7 +147,7 @@ const Home = () => {
         </div>
       </div>
       <div className="content">
-        <Editor value={editorValue} placeholder={'Typing...'} />
+        <Editor value={editorValue} editor={editorRef} placeholder={'Typing...'} />
       </div>
     </div>
   )

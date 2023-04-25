@@ -186,3 +186,6 @@ h6 {
     margin: 1rem 0;
     cursor: pointer;
 }
+.jodit-wysiwyg p{
+ display: inline;
+}

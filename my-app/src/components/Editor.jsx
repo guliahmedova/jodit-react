@@ -1,8 +1,8 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import JoditEditor from 'jodit-react';
 
-const Editor = ({ placeholder, value }) => {
-  const editor = useRef(null);
+const Editor = ({ placeholder, value, editor }) => {
+  const editorRef = useRef(null);
   const [content, setContent] = useState('');
 
   const config = useMemo(() =>
@@ -13,8 +13,11 @@ const Editor = ({ placeholder, value }) => {
     [placeholder]
   );
 
+  console.log("content ", content);
+  console.log("valueL ", value);
+
   useEffect(() => {
-    setContent(value);
+    setContent(prevState => prevState + value);
   }, [value]);
 
   return (
@@ -26,7 +29,6 @@ const Editor = ({ placeholder, value }) => {
         tabIndex={1}
         name='content'
         onBlur={newContent => {
-          console.log(newContent)
           setContent(newContent)
         }}
       />
